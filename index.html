@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuis Sistem ABS</title>
+<style>
+:root{--bg:#f4f1ff;--card:#fff;--tx:#1f1b3a;--mut:#6b6690;--pri:#7c3aed;--pri2:#5b21b6;--ok:#16a34a;--no:#dc2626;--bd:#e3ddff;
+--c0:#e11d48;--c1:#2563eb;--c2:#d97706;--c3:#059669;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141026;--card:#1f1a3a;--tx:#f1eeff;--mut:#a29cc8;--pri:#a78bfa;--pri2:#c4b5fd;--bd:#352e63;--ok:#4ade80;--no:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141026;--card:#1f1a3a;--tx:#f1eeff;--mut:#a29cc8;--pri:#a78bfa;--pri2:#c4b5fd;--bd:#352e63;--ok:#4ade80;--no:#f87171;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 40px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:24px;box-shadow:0 6px 24px rgba(124,58,237,.12)}
+h1{font-size:1.9rem;margin:.2em 0}h2{margin:.2em 0 .6em}
+.mut{color:var(--mut)}
+.hero{text-align:center}.emoji{font-size:3.2rem}
+input{width:100%;padding:14px;border-radius:12px;border:2px solid var(--bd);background:var(--bg);color:var(--tx);font-size:1rem;margin:14px 0}
+input:focus{outline:none;border-color:var(--pri)}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:12px;padding:14px 22px;font-size:1rem;font-weight:700;cursor:pointer;width:100%}
+:root:not([data-theme="light"]) .btn{color:#141026}
+.btn:hover{filter:brightness(1.08)}.btn.alt{background:transparent;color:var(--pri);border:2px solid var(--pri);margin-top:10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;font-weight:700;font-size:.95rem}
+.pill{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:6px 14px}
+.bar{height:10px;background:var(--bd);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.bar>i{display:block;height:100%;width:100%;background:var(--pri);transition:width .1s linear}
+.bar.low>i{background:var(--no)}
+.q{font-size:1.2rem;font-weight:700;margin:6px 0 18px}
+.opts{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+@media(max-width:520px){.opts{grid-template-columns:1fr}}
+.opt{text-align:left;border:2px solid var(--bd);border-left:8px solid var(--c);background:var(--card);color:var(--tx);border-radius:14px;padding:14px;font-size:1rem;cursor:pointer;min-height:64px;font-family:inherit}
+.opt:hover:not(:disabled){transform:translateY(-2px);border-color:var(--c)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.no{background:var(--no);border-color:var(--no);color:#fff}
+.opt.dim{opacity:.45}
+.fb{margin-top:16px;padding:14px;border-radius:14px;background:var(--bg);border:1px solid var(--bd)}
+.fb b.ok{color:var(--ok)}.fb b.no{color:var(--no)}
+.score{font-size:3rem;font-weight:800;color:var(--pri);text-align:center}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--bg);border-radius:14px;padding:12px;text-align:center}.stat b{display:block;font-size:1.4rem}
+ol.lb{padding-left:22px;margin:8px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}.chip{border:2px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:999px;padding:8px 14px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit}.chip.on{background:var(--pri);border-color:var(--pri);color:var(--card)}
+.hide{display:none}
+.rev{border-top:1px solid var(--bd);padding:10px 0;font-size:.95rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="s-start" class="card hero">
+  <div class="emoji">🚗💨</div>
+  <h1>Kuis Sistem ABS</h1>
+  <p class="mut">Anti-lock Brake System · 4 materi · 20 detik per soal<br>Pilih materi, jawab cepat dan benar untuk skor tertinggi!</p>
+  <div class="chips" id="chips"></div>
+  <input id="name" maxlength="20" placeholder="Masukkan nama kamu" autocomplete="off">
+  <button class="btn" id="go">Mulai Kuis</button>
+  <div id="lb0" class="hide" style="text-align:left;margin-top:18px"><b>🏆 Papan Skor</b><ol class="lb" id="lbl0"></ol></div>
+</div>
+
+<div id="s-quiz" class="hide">
+  <div class="top"><span class="pill" id="no"></span><span class="pill" id="st">🔥 0</span><span class="pill" id="sc">0 poin</span></div>
+  <div class="bar" id="bar"><i></i></div>
+  <div class="card">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb hide" id="fb"></div>
+    <button class="btn hide" id="next" style="margin-top:14px">Lanjut ➜</button>
+  </div>
+</div>
+
+<div id="s-end" class="card hide">
+  <div class="hero"><div class="emoji" id="medal">🏁</div><h2 id="endt"></h2></div>
+  <div class="score" id="fs"></div>
+  <div class="stats">
+    <div class="stat"><b id="n-ok"></b><span class="mut">Benar</span></div>
+    <div class="stat"><b id="n-no"></b><span class="mut">Salah</span></div>
+    <div class="stat"><b id="n-st"></b><span class="mut">Streak terbaik</span></div>
+  </div>
+  <b>🏆 Papan Skor</b><ol class="lb" id="lbl"></ol>
+  <details style="margin-top:12px"><summary><b>Tinjau jawaban</b></summary><div id="rev"></div></details>
+  <button class="btn" id="again" style="margin-top:16px">Main Lagi</button>
+</div>
+
+</div>
+<script>
+var Q=[
+{m:1,q:"Apa fungsi utama sistem ABS?",o:["Mencegah roda terkunci saat pengereman keras dan mempertahankan kemampuan kemudi","Menambah tenaga mesin saat akselerasi","Menghemat bahan bakar","Mendinginkan kampas rem"],a:0,e:"ABS mencegah roda terkunci sehingga pengemudi masih bisa mengendalikan arah kendaraan (steerability) sambil mengerem."},
+{m:1,q:"Sensor kecepatan roda bekerja berpasangan dengan ...",o:["Akumulator","Tone ring (rotor bergerigi)","Master silinder","Kampas rem"],a:1,e:"Setiap gerigi tone ring yang melewati sensor menghasilkan sinyal listrik, sehingga ECU dapat menghitung kecepatan putar tiap roda."},
+{m:1,q:"Sensor roda tipe pasif (magnetik/induktif) menghasilkan ...",o:["Sinyal digital dan butuh catu daya","Sinyal tegangan AC yang frekuensinya naik seiring kecepatan roda","Tegangan DC konstan","Tidak menghasilkan sinyal sama sekali"],a:1,e:"Tipe aktif (Hall effect/magnetoresistif) yang butuh catu daya dan menghasilkan sinyal digital."},
+{m:1,q:"Apa fungsi katup solenoid outlet pada HCU?",o:["Mengalirkan minyak dari master silinder ke rem roda","Melepas tekanan rem roda ke akumulator saat roda hampir terkunci","Menyimpan minyak rem sementara","Mengubah sinyal sensor menjadi digital"],a:1,e:"Katup outlet normal tertutup. Katup inlet (normal terbuka) yang mengalirkan minyak dari master silinder ke rem roda."},
+{m:1,q:"Lampu ABS tetap menyala saat berkendara. Artinya ...",o:["ABS bekerja sangat baik","ECU mendeteksi gangguan dan ABS tidak aktif (rem biasa tetap berfungsi)","Rem sudah pasti blong total","Minyak rem baru diganti"],a:1,e:"Lampu normalnya menyala sebentar saat kunci kontak ON lalu padam. Jika tetap menyala, ada gangguan pada sistem."},
+{m:2,q:"Saat roda terkunci total, slip roda bernilai ...",o:["0%","10%","30%","100%"],a:3,e:"Slip = (kecepatan kendaraan − kecepatan roda) ÷ kecepatan kendaraan × 100%. Roda berputar bebas = 0%, terkunci total = 100%."},
+{m:2,q:"Daya cengkeram ban paling besar pada slip roda sekitar ...",o:["0%","10 – 30%","50 – 70%","100%"],a:1,e:"ABS menjaga slip roda tetap pada zona optimal ini. Pada slip 100% daya cengkeram menurun dan kemampuan kemudi hilang."},
+{m:2,q:"Pada fase TAHAN (hold), posisi katup inlet dan outlet adalah ...",o:["Inlet terbuka, outlet tertutup","Inlet tertutup, outlet tertutup","Inlet tertutup, outlet terbuka","Inlet terbuka, outlet terbuka"],a:1,e:"Kedua katup tertutup sehingga tekanan rem roda dipertahankan walaupun pedal ditekan lebih dalam."},
+{m:2,q:"Pada fase TURUN (release), apa yang terjadi?",o:["Katup outlet terbuka dan minyak rem mengalir ke akumulator","Katup inlet terbuka penuh","Motor pompa berhenti total","Tekanan rem roda bertambah"],a:0,e:"Tekanan kaliper turun, lalu pompa balik mengembalikan minyak dari akumulator ke master silinder (terasa sebagai denyutan pedal)."},
+{m:2,q:"Apa yang sebaiknya dilakukan pengemudi saat ABS bekerja pada pengereman mendadak?",o:["Memompa pedal rem berulang kali","Melepas pedal rem","Menekan pedal dengan kuat dan tidak memompa","Menarik rem tangan"],a:2,e:"Siklus tahan–turun–naik berlangsung sekitar 15–20 kali per detik. Getaran pedal itu normal."},
+{m:3,q:"Salah satu kemungkinan penyebab lampu ABS menyala terus adalah ...",o:["Kampas rem baru dipasang","Tegangan aki rendah atau sekring putus","Tekanan ban terlalu tinggi","Wiper rusak"],a:1,e:"Penyebab lain: sensor roda rusak atau kotor, kabel/konektor putus, dan tone ring rusak."},
+{m:3,q:"DTC pada ECU ABS adalah ...",o:["Digital Tire Control","Diagnostic Trouble Code, dibaca dengan scan tool lewat konektor DLC (OBD)","Dynamic Torque Converter","Data Transfer Cable"],a:1,e:"Arti kode berbeda antarpabrikan, jadi selalu rujuk buku manual servis kendaraan."},
+{m:3,q:"Mengapa kode DTC dihapus lalu dilakukan uji jalan setelah perbaikan?",o:["Agar lampu rem padam","Untuk melihat apakah kode muncul lagi; jika muncul, kerusakan masih ada","Agar ECU diganti baru","Untuk menambah tekanan minyak rem"],a:1,e:"Catat semua kode sebelum dihapus. Kode yang muncul kembali menunjukkan kerusakan belum teratasi."},
+{m:3,q:"Cara memeriksa sensor roda tipe AKTIF yang benar adalah ...",o:["Mengukur resistansi seperti sensor pasif","Memeriksa tegangan suplai dan bentuk sinyal (osiloskop atau scan tool)","Membongkar ECU","Menyemprot dengan air bertekanan"],a:1,e:"Sensor aktif jangan diukur resistansinya seperti sensor pasif."},
+{m:3,q:"Pedal rem terasa lunak atau turun terlalu dalam. Kemungkinan penyebabnya ...",o:["Udara dalam sistem, minyak rem kurang atau bocor","Sensor roda bersih","Tone ring baru","Aki terisi penuh"],a:0,e:"Tindakan: periksa kebocoran, lakukan bleeding, dan ganti master silinder bila perlu."},
+{m:4,q:"Mengapa minyak rem perlu diganti berkala?",o:["Karena minyak rem berubah warna menjadi biru","Karena bersifat higroskopis: menyerap air, menurunkan titik didih, dan memicu karat pada HCU","Karena minyak rem menguap seluruhnya tiap bulan","Agar tekanan ban stabil"],a:1,e:"Air yang terserap menurunkan titik didih minyak rem dan memicu karat pada HCU."},
+{m:4,q:"Acuan umum interval penggantian minyak rem adalah ...",o:["Setiap hari","Setiap 1.000 km","2 tahun atau 40.000 km","10 tahun"],a:2,e:"Ganti sesuai spesifikasi pabrik (DOT 3/DOT 4) lalu lakukan bleeding."},
+{m:4,q:"Manakah yang TIDAK boleh dilakukan pada minyak rem?",o:["Memeriksa level di antara MIN dan MAX","Mencampur DOT 5 (silikon) dengan DOT 3/4","Menggunakan jenis sesuai pabrik","Menjaga reservoir tidak kosong saat bleeding"],a:1,e:"DOT 5 berbasis silikon dan tidak boleh dicampur dengan DOT 3/4."},
+{m:4,q:"Mengapa ukuran ban yang berbeda mengganggu kerja ABS?",o:["Karena ban lebih berat","ECU membaca kecepatan putar roda tidak sama","Karena kampas rem cepat habis","Karena minyak rem berkurang"],a:1,e:"Gunakan ukuran ban yang sama pada keempat roda dengan tekanan angin sesuai spesifikasi."},
+{m:4,q:"Hal yang harus dihindari dalam perawatan ABS adalah ...",o:["Memeriksa sekring dan relay","Mencuci ruang roda dan konektor sensor dengan air bertekanan tinggi langsung","Membersihkan sensor dengan kain bersih","Memeriksa kondisi aki"],a:1,e:"Hindari juga mengabaikan lampu ABS menyala dan membuka konektor ECU/HCU saat kunci kontak ON."}
+];
+var sel=0,LBL=["Semua Materi (10 soal acak)","Materi 1 · Komponen","Materi 2 · Cara Kerja","Materi 3 · Diagnosis","Materi 4 · Perawatan"];
+function chips(){var c=$("chips");c.innerHTML="";LBL.forEach(function(t,k){var b=document.createElement("button");b.className="chip"+(k===sel?" on":"");b.textContent=t;b.onclick=function(){sel=k;chips()};c.appendChild(b)})}
+var T=20,i,score,streak,best,okN,log,timer,t0,locked,ord;
+function $(id){return document.getElementById(id)}
+function show(id){["s-start","s-quiz","s-end"].forEach(function(s){$(s).classList.toggle("hide",s!==id)})}
+function shuffle(a){for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t}return a}
+function getLB(){try{return JSON.parse(localStorage.getItem("abs-lb")||"[]")}catch(e){return[]}}
+function setLB(l){try{localStorage.setItem("abs-lb",JSON.stringify(l))}catch(e){}}
+function drawLB(el,l){el.innerHTML="";l.forEach(function(r){var li=document.createElement("li");li.textContent=r.n+" — "+r.s+" poin";el.appendChild(li)})}
+function initLB(){var l=getLB();$("lb0").classList.toggle("hide",!l.length);drawLB($("lbl0"),l)}
+function start(){
+  i=0;score=0;streak=0;best=0;okN=0;log=[];
+  ord=shuffle(Q.map(function(_,k){return k}).filter(function(k){return !sel||Q[k].m===sel})).slice(0,10);
+  show("s-quiz");render();
+}
+function render(){
+  var d=Q[ord[i]];locked=false;
+  $("no").textContent="Soal "+(i+1)+" / "+ord.length;
+  $("st").textContent="🔥 "+streak;$("sc").textContent=score+" poin";
+  $("q").textContent=d.q;
+  $("fb").classList.add("hide");$("next").classList.add("hide");
+  var box=$("opts");box.innerHTML="";
+  d._m=shuffle(d.o.map(function(t,k){return{t:t,ok:k===d.a}}));
+  d._m.forEach(function(m,k){
+    var b=document.createElement("button");b.className="opt";b.style.setProperty("--c","var(--c"+k+")");
+    b.textContent=String.fromCharCode(65+k)+". "+m.t;
+    b.onclick=function(){answer(k)};box.appendChild(b);
+  });
+  t0=Date.now();clearInterval(timer);
+  tick();timer=setInterval(tick,100);
+}
+function tick(){
+  var left=Math.max(0,T-(Date.now()-t0)/1000);
+  $("bar").firstElementChild.style.width=(left/T*100)+"%";
+  $("bar").classList.toggle("low",left<6);
+  if(left<=0)answer(-1);
+}
+function answer(k){
+  if(locked)return;locked=true;clearInterval(timer);
+  var d=Q[ord[i]],left=Math.max(0,T-(Date.now()-t0)/1000),good=k>=0&&d._m[k].ok,pts=0;
+  if(good){streak++;best=Math.max(best,streak);okN++;pts=500+Math.round(500*left/T)+Math.min(streak-1,4)*50;score+=pts}
+  else streak=0;
+  log.push({q:d.q,ok:good,e:d.e});
+  var bs=$("opts").children;
+  for(var j=0;j<bs.length;j++){bs[j].disabled=true;
+    if(d._m[j].ok)bs[j].classList.add("ok");else if(j===k)bs[j].classList.add("no");else bs[j].classList.add("dim")}
+  $("st").textContent="🔥 "+streak;$("sc").textContent=score+" poin";
+  var fb=$("fb");fb.classList.remove("hide");
+  fb.innerHTML="";
+  var h=document.createElement("b");
+  h.className=good?"ok":"no";
+  h.textContent=good?"✅ Benar! +"+pts+" poin":(k<0?"⏰ Waktu habis!":"❌ Kurang tepat");
+  var p=document.createElement("div");p.textContent=d.e;
+  fb.appendChild(h);fb.appendChild(p);
+  $("next").textContent=i===ord.length-1?"Lihat Hasil 🏁":"Lanjut ➜";
+  $("next").classList.remove("hide");
+}
+function finish(){
+  var nm=($("name").value||"").trim()||"Siswa";
+  var l=getLB();l.push({n:nm+" · "+(sel?"Materi "+sel:"Semua"),s:score});l.sort(function(a,b){return b.s-a.s});l=l.slice(0,5);setLB(l);
+  show("s-end");
+  var pct=okN/ord.length;
+  $("medal").textContent=pct>=.8?"🏆":pct>=.6?"🎉":"💪";
+  $("endt").textContent=pct>=.8?"Hebat, "+nm+"!":pct>=.6?"Bagus, "+nm+"!":"Ayo coba lagi, "+nm+"!";
+  $("fs").textContent=score+" poin";
+  $("n-ok").textContent=okN;$("n-no").textContent=ord.length-okN;$("n-st").textContent=best;
+  drawLB($("lbl"),l);
+  var r=$("rev");r.innerHTML="";
+  log.forEach(function(x,k){var d=document.createElement("div");d.className="rev";
+    d.textContent=(x.ok?"✅ ":"❌ ")+(k+1)+". "+x.q+" — "+x.e;r.appendChild(d)});
+}
+$("go").onclick=start;
+$("name").onkeydown=function(e){if(e.key==="Enter")start()};
+$("next").onclick=function(){if(i===ord.length-1)finish();else{i++;render()}};
+$("again").onclick=function(){show("s-start");initLB()};
+chips();initLB();
+</script>
+</body>
+</html>
